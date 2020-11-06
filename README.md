@@ -2,11 +2,11 @@
 textrank, pagerank와 bm25를 이용한 한국어 리뷰 요약 python 패키지입니다.
 ## Installation
 ```sh
-pip install KoreanReviewSummarizer
+pip install ks4r
 ```
 ## Usage
 ```python
-from KoreanReviewSummarizer import Summarizer
+from ks4r import Summarizer
 summarizer = Summarizer() #초기화
 summary = summarizer.summarize(text) #여러 리뷰들을 하나의 String으로 만들어 넣으시면 됩니다.
 ```

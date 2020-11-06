@@ -58,7 +58,7 @@ class Summarizer:
                         , 'q': one_sentence
                     }
                     _agent = requests.Session()
-                    _checked = _agent.get(base_url, params=payload, headers=headers
+                    _checked = _agent.get(base_url, params=payload, headers=headers)
                     _checked = _checked.text[42:-2].split('\"html\":\"')[1].split('\"notag')[0]
                     _words = []
                     for word in words.split('>'):
