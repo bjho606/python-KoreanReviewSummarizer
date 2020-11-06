@@ -6,7 +6,7 @@ pip install ks4r
 ```
 ## Usage
 ```python
-from ks4r import Summarizer
+from ks4r.ks4r import Summarizer
 summarizer = Summarizer() #초기화
 summary = summarizer.summarize(text) #여러 리뷰들을 하나의 String으로 만들어 넣으시면 됩니다.
 ```
