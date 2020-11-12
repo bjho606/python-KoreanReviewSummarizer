@@ -47,10 +47,10 @@ class Summarizer:
                      , return_all=False):
         self.k = k
         self.useful_tags=useful_tags
-        if stopwords==None:
-            self.stopwords=default_stopwords
-        else:
-            self.stopwords=stopwords
+        if stopwords==None: self.stopwords=default_stopwords
+        else: self.stopwords=stopwords
+        if delimiter==None: self.delimiter='\.|\\n|\.\\n|\!'
+        else: self.delimiter=delimiter
         self.spell_check=spell_check
         self.return_all=return_all
         self.okt = Okt()
@@ -61,10 +61,7 @@ class Summarizer:
     def summarize(self, reviews):
         if isinstance(reviews, list):
             reviews = ' '.join(reviews)
-        if delimiter == None:
-            self.splited_reviews = re.split('\.|\\n|\.\\n|\!', reviews.strip())
-        else:
-            self.splited_reviews = re.split(re.escape(delimiter), reviews.strip())
+        self.splited_reviews = re.split(re.escape(delimiter), reviews.strip())
         self.sentences = []
         self.sentence_index = 0
 
