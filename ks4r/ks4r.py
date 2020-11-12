@@ -39,7 +39,7 @@ class SentenceObj:
 
 class Summarizer:
 
-    def __init__(self, k=5
+    def __init__(self, k=3
                      , useful_tags=['Noun', 'Verb', 'Adjective', 'Determiner', 'Adverb', 'Conjunction', 'Josa', 'PreEomi', 'Eomi', 'Suffix', 'Alpha', 'Number']
                      , stopwords=None
                      , delimiter=None
@@ -61,7 +61,7 @@ class Summarizer:
     def summarize(self, reviews):
         if isinstance(reviews, list):
             reviews = ' '.join(reviews)
-        self.splited_reviews = re.split(re.escape(delimiter), reviews.strip())
+        self.splited_reviews = re.split(self.delimiter, reviews.strip())
         self.sentences = []
         self.sentence_index = 0
 
@@ -134,8 +134,12 @@ class Summarizer:
                 self.summaries.append(self.result[i].text)
                 
             return self.summaries
-            
-        for i in range(self.k):
-            self.summaries.append(self.result[i].text)
+        
+        if self.k > len(self.result):
+            for i in range(len(self.result)):
+                self.summaries.append(self.result[i].text)
+        else:
+            for i in range(self.k):
+                self.summaries.append(self.result[i].text)
             
         return self.summaries
