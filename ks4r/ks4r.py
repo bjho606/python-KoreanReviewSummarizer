@@ -64,9 +64,11 @@ class Summarizer:
         if delimiter == None:
             self.splited_reviews = re.split('\.|\\n|\.\\n|\!', reviews.strip())
         else:
-            self.splited_reviews = re.split(delimiter, reviews.strip())
+            self.splited_reviews = re.split(re.escape(delimiter), reviews.strip())
         self.sentences = []
         self.sentence_index = 0
+
+        _agent = requests.Session()
         for one_sentence in self.splited_reviews:
             while len(one_sentence) and (one_sentence[-1] == '.' or one_sentence[-1] == ' '):
                 one_sentence = one_sentence.strip(' ').strip('.')
@@ -81,7 +83,6 @@ class Summarizer:
                           '_callback': 'window.__jindo2_callback._spellingCheck_0'
                         , 'q': one_sentence
                     }
-                    _agent = requests.Session()
                     _checked = _agent.get(base_url, params=payload, headers=headers)
                     _checked = _checked.text[42:-2].split('\"html\":\"')[1].split('\"notag')[0]
                     _words = []
