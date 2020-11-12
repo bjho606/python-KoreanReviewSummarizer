@@ -42,15 +42,14 @@ class Summarizer:
     def __init__(self, k=3
                      , useful_tags=['Noun', 'Verb', 'Adjective', 'Determiner', 'Adverb', 'Conjunction', 'Josa', 'PreEomi', 'Eomi', 'Suffix', 'Alpha', 'Number']
                      , stopwords=None
-                     , delimiter=None
+                     , delimiter='\.|\\n|\.\\n|\!'
                      , spell_check=True
                      , return_all=False):
         self.k = k
         self.useful_tags=useful_tags
         if stopwords==None: self.stopwords=default_stopwords
         else: self.stopwords=stopwords
-        if delimiter==None: self.delimiter='\.|\\n|\.\\n|\!'
-        else: self.delimiter=delimiter
+        self.delimiter=delimiter
         self.spell_check=spell_check
         self.return_all=return_all
         self.okt = Okt()
