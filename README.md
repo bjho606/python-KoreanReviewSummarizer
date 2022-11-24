@@ -1,10 +1,5 @@
 # KoreanReviewSummarizer
 textrank, pagerank와 bm25를 이용한 한국어 리뷰 요약 python 패키지입니다.
-## Installation
-```sh
-pip install ks4r
-pip install scipy
-```
 ## Run on Virtualenv Environment
 ```sh
 pip install virtualenv
@@ -13,6 +8,11 @@ cd [Project_Directory]
 virtualenv [Virtualenv_Name]
 source [Virtualenv_Name]/bin/activate
 # (to exit venv) deactivate
+```
+## Installation
+```sh
+pip install ks4r
+pip install scipy
 ```
 ## Settings
 ```python
