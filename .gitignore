@@ -19,6 +19,9 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-__pychache__/*
-./__pychache__
-./__pychache__/*
+__pycache__/*
+./__pycache__
+./__pycache__/*
+ks4r/__pycache__/*
+./ks4r/__pycache__
+./ks4r/__pycache__/*
