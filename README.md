@@ -13,6 +13,8 @@ source [Virtualenv_Name]/bin/activate
 ```sh
 pip install ks4r
 pip install scipy
+pip install mecab-python
+# mecab 설치 관련은 알아서 추가적으로 해결할 것..!
 ```
 ## Settings
 ```python
