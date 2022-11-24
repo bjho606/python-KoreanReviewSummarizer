@@ -3,9 +3,21 @@ textrank, pagerank와 bm25를 이용한 한국어 리뷰 요약 python 패키지
 ## Installation
 ```sh
 pip install ks4r
+pip install scipy
 ```
-## Usage
+## Run on Virtualenv Environment
+```sh
+pip install virtualenv
+
+cd [Project_Directory]
+virtualenv [Virtualenv_Name]
+source [Virtualenv_Name]/bin/activate
+# (to exit venv) deactivate
+```
+## Settings
 ```python
+# in __init__.py file
+
 from ks4r.ks4r import Summarizer
 summarizer = Summarizer() #초기화
 summary = summarizer.summarize(text) #여러 리뷰들을 하나의 String으로 만들어 넣으시면 됩니다.

@@ -5,6 +5,7 @@ import networkx
 import numpy as np
 from konlpy.tag import Okt
 from rank_bm25 import BM25Okapi
+import time
 
 default_stopwords = ['좋아요', '너무', '신발', '배송', '좀', '딱', '것', '주문', '마음', '때', '생각', '신어', '신고', '들어요', '상품', '좋습니다', '더', '맘', '좋은', '좋네요', '이뻐요', '정말', '아주', '거', '예뻐요'
             , '이쁘고', '감사합니다', '신', '평소', '좋고', '느낌', '이쁘네요', '색상', '완전', '제', '예쁘고', '고민', '그래도', '근데', '여름', '저', '대비', '신으면', '원래', '보고', '받았습니다', '빠른', '발도', '이쁩니다',
@@ -38,13 +39,14 @@ class SentenceObj:
         self.tokens = tokens
 
 class Summarizer:
-
     def __init__(self, k=3
                      , useful_tags=['Noun', 'Verb', 'Adjective', 'Determiner', 'Adverb', 'Conjunction', 'Josa', 'PreEomi', 'Eomi', 'Suffix', 'Alpha', 'Number']
                      , stopwords=None
                      , delimiter='\.|\\n|\.\\n|\!'
                      , spell_check=True
                      , return_all=False):
+        # 시간 측정 시작
+        # start = time.time()
         self.k = k
         self.useful_tags=useful_tags
         if stopwords==None: self.stopwords=default_stopwords
@@ -52,19 +54,29 @@ class Summarizer:
         self.delimiter=delimiter
         self.spell_check=spell_check
         self.return_all=return_all
+        # print("init time :", time.time() - start)
         self.okt = Okt()
         if not isinstance(k, int):
-            raise KoreanTextRank4ReviewError('k must be int')
+            raise KoreanReviewSummarizerError('k must be int')
+        # print("okt time :", time.time() - start)
         
         
     def summarize(self, reviews):
+        # 시간 측정 시작
+        start = time.time()
+
         if isinstance(reviews, list):
             reviews = ' '.join(reviews)
         self.splited_reviews = re.split(self.delimiter, reviews.strip())
         self.sentences = []
         self.sentence_index = 0
 
+        print("listify time :", time.time() - start)
+
         _agent = requests.Session()
+
+        print("session time :", time.time() - start)
+        
         for one_sentence in self.splited_reviews:
             while len(one_sentence) and (one_sentence[-1] == '.' or one_sentence[-1] == ' '):
                 one_sentence = one_sentence.strip(' ').strip('.')
@@ -82,14 +94,21 @@ class Summarizer:
                     _checked = _agent.get(base_url, params=payload, headers=headers)
                     _checked = _checked.text[42:-2].split('\"html\":\"')[1].split('\"notag')[0]
                     _words = []
-                    for word in words.split('>'):
+                    for word in _words.split('>'):
                         if not word.strip().startswith('<'):
                             _words.append(word.split('<')[0].strip())
                     one_sentence = ' '.join(_words)
                 except:
                     pass
+
+            print("spell check time :", time.time() - start)
+            
             tokens = []
+            # print(one_sentence)
             word_tag_pairs = self.okt.pos(one_sentence)
+            # --- 여기서 처음 okt를 사용할 때 느려짐.. why..? --- 
+            print("okt word tag pair time :", time.time() - start)
+
             for word, tag in word_tag_pairs:
                 if word in self.stopwords:
                     continue
@@ -102,10 +121,14 @@ class Summarizer:
             self.sentences.append(sentence)
             self.sentence_index += 1
 
+        print("tokenize time :", time.time() - start)
+
         self.num_sentences = len(self.sentences)
         self.bm25 = BM25Okapi([sentenceObj.text for sentenceObj in self.sentences])
         for sentenceObj in self.sentences:
             sentenceObj.vector = self.bm25.get_scores(sentenceObj.text)
+        
+        print("bm25 time :", time.time() - start)
             
         self.matrix = np.zeros((self.num_sentences, self.num_sentences))
         for sentence1 in self.sentences:
@@ -117,6 +140,8 @@ class Summarizer:
                     len(set(sentence1.tokens) & set(sentence2.tokens)) / \
                     (math.log(len(sentence1.tokens)) + math.log(len(sentence2.tokens)))
         
+        print("matrix time :", time.time() - start)
+
         self.graph = networkx.Graph()
         self.graph.add_nodes_from(self.sentences)
         for sentence1 in self.sentences:
@@ -124,14 +149,22 @@ class Summarizer:
                 weight = self.matrix[sentence1.index, sentence2.index]
                 if weight:
                     self.graph.add_edge(sentence1, sentence2, weight=weight)
+
+        print("graph time :", time.time() - start)
+
         self.pagerank = networkx.pagerank(self.graph, weight='weight')
         self.result = sorted(self.pagerank, key=self.pagerank.get, reverse=True)
+
+        print("pagerank time :", time.time() - start)
         
         self.summaries = []
         if self.return_all:
             for i in range(len(self.result)):
                 self.summaries.append(self.result[i].text)
                 
+            # return_all=True 시간 측정
+            print("return_all(True) time :", time.time() - start)
+            
             return self.summaries
         
         if self.k > len(self.result):
@@ -141,4 +174,7 @@ class Summarizer:
             for i in range(self.k):
                 self.summaries.append(self.result[i].text)
             
+        # return_all=False 시간 측정
+        print("return time :", time.time() - start)
+
         return self.summaries
