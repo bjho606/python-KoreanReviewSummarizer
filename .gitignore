@@ -25,3 +25,4 @@ __pycache__/*
 ks4r/__pycache__/*
 ./ks4r/__pycache__
 ./ks4r/__pycache__/*
+.DS_Store
