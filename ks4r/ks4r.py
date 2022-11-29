@@ -1,4 +1,5 @@
 import re
+import os
 import math
 import requests
 import networkx
@@ -41,7 +42,8 @@ class Summarizer:
         # print(self.useful_tags)
         # 불용어 정하기
         if stopwords==None:
-            f = open("./default_korean_stopwords.txt", 'r')
+            cur_dir = os.path.dirname(__file__)
+            f = open(cur_dir + "/default_korean_stopwords.txt", 'r')
             lines = f.readlines()
             for line in lines:
                 line = line.replace('\n', '')
